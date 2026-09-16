@@ -4,6 +4,8 @@ A design skill for building cinematic HTML reels — 30-second looping camera-mo
 
 Named for what the pieces are supposed to do: give digital things weight.
 
+> **▶ [View the example reels live](https://iwannabek8.github.io/gravitas/examples/01-tokyo-alley-detective.html)** — Tokyo detective · [Iowa cornfield](https://iwannabek8.github.io/gravitas/examples/02-iowa-autumn-cornfield.html) · [ice castle](https://iwannabek8.github.io/gravitas/examples/03-ice-castle-snow-queen.html)
+
 ## What it makes
 
 A single HTML file. Drop it anywhere — email attachment, presentation cold-open, Slack, portfolio site, iframe. Renders on any browser. Loops seamlessly. No player, no cloud, no login, no MP4.
