@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Gravitas · Tokyo Alley Detective</title>
+<style>
+  :root {
+    --indigo-deep: #0a0812;
+    --indigo-mid: #14122a;
+    --indigo-cool: #1e2038;
+    --sodium: #ffa64d;
+    --sodium-warm: #ffcf80;
+    --neon-far: #d94c7a;
+    --paper: #e8ddc9;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    height: 100%; background: #000; overflow: hidden;
+    font-family: "Yu Mincho", "Hiragino Mincho ProN", Cambria, Georgia, serif;
+    color: var(--paper);
+  }
+
+  .stage {
+    position: fixed; inset: 0;
+    perspective: 1400px;
+    overflow: hidden;
+    background:
+      radial-gradient(ellipse at 22% 82%, rgba(255, 166, 77, 0.14) 0%, transparent 35%),
+      radial-gradient(ellipse at 50% 55%, var(--indigo-mid) 0%, var(--indigo-deep) 65%, #000 100%);
+  }
+
+  /* Camera rig — all shot transforms + per-shot grade live here */
+  .rig {
+    position: absolute; inset: 0;
+    transform-origin: 62% 58%;
+    will-change: transform, filter;
+    animation: shotSequence 30s infinite cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .layer { position: absolute; inset: -8%; }
+
+  /* Distant silhouette — cooled and desaturated for atmospheric perspective */
+  .far-bldg {
+    bottom: 42%;
+    filter: blur(1px) contrast(0.6) saturate(0.3) brightness(0.6);
+  }
+  .far-bldg svg { width: 100%; height: 100%; display: block; }
+
+  /* The single far neon sign — small, past the alley mouth */
+  .neon-far {
+    position: absolute;
+    top: 38%;
+    left: 48%;
+    color: var(--neon-far);
+    font-size: 0.9vw;
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    letter-spacing: 0.2em;
+    padding: 4px 3px;
+    border: 1px solid currentColor;
+    text-shadow: 0 0 4px currentColor, 0 0 10px currentColor;
+    box-shadow: 0 0 4px currentColor, 0 0 12px currentColor;
+    opacity: 0.85;
+    animation: farNeonBreathe 6s ease-in-out infinite;
+    filter: blur(0.3px);
+  }
+  @keyframes farNeonBreathe {
+    0%, 100% { opacity: 0.85; }
+    50%      { opacity: 0.6; }
+  }
+
+  /* Alley walls converging — the warm side (left, sodium) and cold side (right) */
+  .alley {
+    position: absolute;
+    left: 50%; bottom: 0;
+    width: 200%; height: 85%;
+    transform: translateX(-50%);
+  }
+  .wall {
+    position: absolute; bottom: 0;
+    width: 45%; height: 100%;
+    background:
+      linear-gradient(180deg, rgba(0,0,0,0.95) 0%, rgba(20,18,42,0.7) 50%, rgba(0,0,0,0.98) 100%),
+      repeating-linear-gradient(180deg,
+        rgba(255,255,255,0.02) 0px,
+        rgba(255,255,255,0.02) 1px,
+        transparent 1px, transparent 60px);
+  }
+  .wall.left {
+    left: 0;
+    transform: perspective(900px) rotateY(38deg);
+    transform-origin: right center;
+    box-shadow: inset -60px 0 120px rgba(255, 166, 77, 0.22);
+  }
+  .wall.right {
+    right: 0;
+    transform: perspective(900px) rotateY(-38deg);
+    transform-origin: left center;
+    box-shadow: inset 40px 0 100px rgba(30, 32, 56, 0.6);
+  }
+
+  /* The sodium lamp — the ONE warm source, high left */
+  .lamp {
+    position: absolute;
+    top: 22%;
+    left: 8%;
+    width: 3vw; height: 3vw;
+    z-index: 5;
+  }
+  .lamp::before {
+    content: '';
+    position: absolute; inset: 20%;
+    background: var(--sodium-warm);
+    border-radius: 50%;
+    box-shadow:
+      0 0 30px var(--sodium),
+      0 0 90px var(--sodium),
+      0 0 200px rgba(255, 166, 77, 0.7),
+      0 0 400px rgba(255, 166, 77, 0.3);
+    animation: lampFlicker 7s ease-in-out infinite;
+  }
+  @keyframes lampFlicker {
+    0%, 96%, 100% { opacity: 1; }
+    97%           { opacity: 0.6; }
+    98%           { opacity: 1; }
+  }
+
+  /* Sodium light shaft — a soft beam falling from the lamp */
+  .shaft {
+    position: absolute;
+    top: 22%; left: 6%;
+    width: 28vw; height: 65vh;
+    background: linear-gradient(160deg,
+      rgba(255, 166, 77, 0.3) 0%,
+      rgba(255, 166, 77, 0.1) 40%,
+      transparent 75%);
+    transform: skewX(-8deg);
+    filter: blur(6px);
+    z-index: 4;
+    mix-blend-mode: screen;
+  }
+
+  /* Second practical — cool blue-white spill from alley mouth (frame right, mid) */
+  .practical-cool {
+    position: absolute;
+    top: 30%; right: 8%;
+    width: 20vw; height: 55vh;
+    background: linear-gradient(200deg,
+      rgba(140, 170, 220, 0.18) 0%,
+      rgba(120, 150, 200, 0.06) 45%,
+      transparent 75%);
+    transform: skewX(6deg);
+    filter: blur(8px);
+    z-index: 4;
+    mix-blend-mode: screen;
+  }
+
+  /* Wet ground with the specular puddle streak — brightest thing in frame */
+  .ground {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    height: 40%;
+    background:
+      linear-gradient(180deg,
+        transparent 0%,
+        rgba(20, 18, 42, 0.4) 30%,
+        rgba(10, 8, 18, 0.9) 100%);
+  }
+  .puddle-streak {
+    position: absolute;
+    bottom: 8%; left: 20%;
+    width: 40%; height: 6%;
+    background: radial-gradient(ellipse at center,
+      rgba(255, 207, 128, 0.8) 0%,
+      rgba(255, 166, 77, 0.4) 30%,
+      transparent 70%);
+    filter: blur(3px);
+    transform: perspective(400px) rotateX(72deg);
+    mix-blend-mode: screen;
+    animation: puddleShimmer 4s ease-in-out infinite;
+  }
+  @keyframes puddleShimmer {
+    0%, 100% { opacity: 1; transform: perspective(400px) rotateX(72deg) scaleX(1); }
+    50%      { opacity: 0.85; transform: perspective(400px) rotateX(72deg) scaleX(1.03); }
+  }
+
+  /* Low fog drift */
+  .fog {
+    position: absolute; left: -10%; right: -10%; bottom: 15%;
+    height: 25%;
+    background: radial-gradient(ellipse at 30% 60%, rgba(180, 190, 220, 0.06) 0%, transparent 50%);
+    filter: blur(20px);
+    z-index: 6;
+    animation: fogDrift 24s ease-in-out infinite alternate;
+  }
+  @keyframes fogDrift {
+    to { transform: translateX(6%); }
+  }
+
+  /* Second figure — small, far, only readable in pull-back */
+  .figure-far {
+    position: absolute;
+    left: 44%;
+    bottom: 33%;
+    width: 2.2vw;
+    height: 6vh;
+    z-index: 7;
+    opacity: 0.55;
+    filter: blur(0.5px);
+  }
+  .figure-far svg { width: 100%; height: 100%; display: block; }
+
+  /* The detective — right third, contrapposto */
+  .detective {
+    position: absolute;
+    right: 22%;
+    bottom: 7%;
+    width: 11vw; height: 33vh;
+    z-index: 10;
+    animation: breath 4.6s ease-in-out infinite;
+    transform-origin: 50% 100%;
+  }
+  @keyframes breath {
+    0%, 100% { transform: translateY(0) skewX(0deg); }
+    50%      { transform: translateY(-0.4%) skewX(0.4deg); }
+  }
+  .detective svg { width: 100%; height: 100%; display: block; }
+
+  /* Canvas rain — actual particles with depth, varying speed + opacity, sodium glints */
+  .rain-canvas {
+    position: absolute;
+    inset: -10%;
+    width: 120%; height: 120%;
+    z-index: 20;
+    pointer-events: none;
+    mix-blend-mode: screen;
+  }
+
+  /* Film grain — subtle, not showy. STATIC (no animated shift for perf) */
+  .grain {
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.85  0 0 0 0 0.85  0 0 0 0 0.85  0 0 0 0.35 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    opacity: 0.08;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    z-index: 90;
+  }
+
+  /* Letterbox with soft vignette that INTEGRATES the bars into the frame */
+  .bar { position: fixed; left: 0; right: 0; height: 12vh; background: #000; z-index: 100; pointer-events: none; }
+  .bar.top    { top: 0;    box-shadow: 0 12px 40px 8px rgba(0,0,0,0.9); }
+  .bar.bot    { bottom: 0; box-shadow: 0 -12px 40px 8px rgba(0,0,0,0.9); }
+  .vignette {
+    position: fixed; inset: 0;
+    box-shadow: inset 0 0 160px rgba(0,0,0,0.55);
+    pointer-events: none;
+    z-index: 95;
+  }
+
+  /* Title card — fades in briefly at open, again at close */
+  .title-card {
+    position: fixed; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column;
+    z-index: 105;
+    pointer-events: none;
+    opacity: 0;
+    animation: titleCard 30s infinite;
+  }
+  .title-card .kanji {
+    font-size: 4.5vw;
+    letter-spacing: 0.3em;
+    color: var(--paper);
+    font-weight: 300;
+    writing-mode: horizontal-tb;
+    text-shadow: 0 0 20px rgba(232, 221, 201, 0.3);
+  }
+  .title-card .rom {
+    font-size: 0.85vw;
+    letter-spacing: 0.55em;
+    color: rgba(232, 221, 201, 0.55);
+    margin-top: 1.8vh;
+    padding-left: 0.55em;
+    font-family: Cambria, Georgia, serif;
+    font-style: italic;
+  }
+  @keyframes titleCard {
+    0%   { opacity: 0; }
+    3%   { opacity: 1; }
+    7%   { opacity: 1; }
+    10%  { opacity: 0; }
+    93%  { opacity: 0; }
+    100% { opacity: 0; }
+  }
+
+  /* Credits — fade in at end of loop */
+  .credits {
+    position: fixed;
+    left: 50%;
+    bottom: 15vh;
+    transform: translateX(-50%);
+    text-align: center;
+    z-index: 105;
+    opacity: 0;
+    animation: credits 30s infinite;
+    font-family: Cambria, Georgia, serif;
+    color: rgba(232, 221, 201, 0.5);
+  }
+  .credits .a { font-size: 0.7vw; letter-spacing: 0.4em; font-style: italic; }
+  .credits .b { font-size: 0.6vw; letter-spacing: 0.35em; margin-top: 0.8vh; opacity: 0.6; }
+  @keyframes credits {
+    0%, 92%    { opacity: 0; }
+    95%, 99%   { opacity: 1; }
+    100%       { opacity: 0; }
+  }
+
+  /* Click-to-sound affordance */
+  .audio-toggle {
+    position: fixed;
+    bottom: 13vh; right: 4vw;
+    z-index: 200;
+    font-family: Cambria, Georgia, serif;
+    font-size: 0.7vw;
+    letter-spacing: 0.35em;
+    color: rgba(232, 221, 201, 0.5);
+    background: transparent;
+    border: 1px solid rgba(232, 221, 201, 0.25);
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: color 0.3s, border-color 0.3s;
+    font-style: italic;
+  }
+  .audio-toggle:hover { color: var(--paper); border-color: rgba(232, 221, 201, 0.6); }
+  .audio-toggle.on { color: var(--sodium-warm); border-color: rgba(255, 207, 128, 0.5); }
+
+  /* THE SHOT SEQUENCE — rhythmic, per-shot graded */
+  /* Timings: 0–6s establish, 6–9s crash, 9–16s bullet time, 16–18s whip, 18–23s CU, 23–30s pull back */
+  @keyframes shotSequence {
+    /* Shot 1: Establishing (0–20% = 0–6s) — slow push in, muted grade */
+    0%    { transform: scale(0.98) translate(0, 0); filter: contrast(1.05) saturate(0.95) brightness(1.1); }
+    18%   { transform: scale(1.12) translate(0, 1%); filter: contrast(1.05) saturate(0.95) brightness(1.1); }
+
+    /* Shot 2: Soft crash (20–30% = 6–9s) — quick push to medium, warmer grade */
+    20%   { transform: scale(1.12) translate(0, 1%); filter: contrast(1.15) saturate(1.05) brightness(1.15); }
+    23%   { transform: scale(2.1) translate(-4%, 6%); filter: contrast(1.15) saturate(1.05) brightness(1.15); }
+    30%   { transform: scale(2.1) translate(-4%, 6%); filter: contrast(1.15) saturate(1.05) brightness(1.15); }
+
+    /* Shot 3: HOLD (30–57% = 9–17s) — no camera motion. Rain + breath + lamp flicker carry it. */
+    57%   { transform: scale(2.1) translate(-4%, 6%); filter: contrast(1.15) saturate(1.05) brightness(1.15); }
+
+    /* Shot 4: Low-angle CU (57–77% = 17–23s) — dutch LOCKED at -2° from frame 1, no drift */
+    57.1% { transform: scale(2.7) translate(-8%, 14%) rotate(-2deg); filter: contrast(1.35) saturate(0.85) brightness(1.05); }
+    77%   { transform: scale(2.85) translate(-8%, 14%) rotate(-2deg); filter: contrast(1.35) saturate(0.82) brightness(1.03); }
+
+    /* Shot 5: Pull back reveal (77–100% = 23–30s) */
+    77.1% { transform: scale(2.85) translate(-8%, 14%) rotate(0deg); filter: contrast(1.2) saturate(0.9) brightness(1.05); }
+    100%  { transform: scale(0.72) translate(0, -4%); filter: contrast(1.05) saturate(0.85) brightness(1); }
+  }
+</style>
+</head>
+<body>
+
+  <div class="stage">
+    <div class="rig">
+      <!-- Distant cooled silhouette -->
+      <div class="layer far-bldg">
+        <svg viewBox="0 0 100 40" preserveAspectRatio="none">
+          <path d="M0,40 L0,26 L8,26 L8,20 L14,20 L14,24 L20,24 L20,15 L28,15 L28,22 L34,22 L34,18 L42,18 L42,25 L50,25 L50,19 L58,19 L58,23 L66,23 L66,17 L74,17 L74,22 L82,22 L82,20 L90,20 L90,25 L100,25 L100,40 Z"
+                fill="#151428"/>
+        </svg>
+      </div>
+
+      <!-- The single far neon sign -->
+      <div class="neon-far">現在</div>
+
+      <!-- Alley walls -->
+      <div class="alley">
+        <div class="wall left"></div>
+        <div class="wall right"></div>
+      </div>
+
+      <!-- Sodium lamp + shaft + cool practical from alley mouth -->
+      <div class="shaft"></div>
+      <div class="practical-cool"></div>
+      <div class="lamp"></div>
+
+      <!-- Ground + specular puddle -->
+      <div class="ground"></div>
+      <div class="puddle-streak"></div>
+
+      <!-- Low fog -->
+      <div class="fog"></div>
+
+      <!-- Back rain removed — now handled by canvas particles -->
+
+      <!-- Second figure far up the alley -->
+      <div class="figure-far">
+        <svg viewBox="0 0 40 120">
+          <ellipse cx="20" cy="14" rx="10" ry="3" fill="#0a0812"/>
+          <path d="M14,14 Q14,6 20,6 Q26,6 26,14 Z" fill="#0a0812"/>
+          <ellipse cx="20" cy="22" rx="6" ry="8" fill="#0a0812"/>
+          <path d="M10,34 L30,34 L34,115 L6,115 Z" fill="#0a0812"/>
+        </svg>
+      </div>
+
+      <!-- The detective — right third, contrapposto -->
+      <div class="detective">
+        <svg viewBox="0 0 130 340">
+          <!-- Weight-bearing back leg (right in frame = right in SVG), forward foot slight lift -->
+
+          <!-- Coat body: asymmetric silhouette, shoulders counter-tilted to hips -->
+          <!-- Hip line tilted right-down (weight on right leg), shoulder line tilted left-down -->
+
+          <!-- Left leg (forward, weight off) -->
+          <path d="M 55 300 L 60 335 L 72 335 L 68 300 Z" fill="#0a0812"/>
+          <!-- Right leg (planted, weight bearing) -->
+          <path d="M 78 300 L 82 338 L 96 338 L 92 300 Z" fill="#0a0812"/>
+
+          <!-- Trench coat body — hem hangs, waist twist -->
+          <path d="M 32 108 Q 30 200 40 230 L 50 302 L 100 302 L 108 230 Q 106 200 100 108 Z" fill="#0a0812"/>
+
+          <!-- Coat opening / interior shadow -->
+          <path d="M 62 108 L 66 200 L 70 108 Z" fill="#050308"/>
+
+          <!-- Belt line, tilted for hip contrapposto -->
+          <path d="M 38 200 L 104 208 L 104 214 L 38 206 Z" fill="#000"/>
+
+          <!-- Collar upturned, asymmetric -->
+          <path d="M 38 108 L 50 90 L 65 96 L 80 88 L 96 108 L 92 122 L 42 122 Z" fill="#020105"/>
+
+          <!-- Head, tilted down + slightly away from lamp (lamp is at frame-LEFT which is our SVG-LEFT) -->
+          <!-- Head turned right (away from warm source on left), gaze down -->
+          <ellipse cx="70" cy="78" rx="16" ry="20" fill="#0a0812"/>
+
+          <!-- Hat brim, asymmetric tilt -->
+          <path d="M 46 58 Q 68 46 92 58 L 96 62 Q 68 52 44 62 Z" fill="#000"/>
+          <!-- Hat crown -->
+          <path d="M 52 58 Q 52 32 72 32 Q 90 32 90 58 Z" fill="#0a0812"/>
+
+          <!-- Left hand in coat pocket -->
+          <ellipse cx="45" cy="205" rx="6" ry="8" fill="#050308"/>
+
+          <!-- SODIUM RIM LIGHT — from frame-left lamp, catches: hat brim front, far cheek/jaw, shoulder line, coat shoulder -->
+          <path d="M 46 58 Q 68 46 92 58 L 90 60 Q 68 50 46 60 Z" fill="#ffa64d" opacity="0.55"/>
+          <path d="M 52 58 L 55 42 L 53 58 Z" fill="#ffa64d" opacity="0.35"/>
+          <path d="M 55 78 Q 54 88 58 96 L 60 96 Q 56 88 57 78 Z" fill="#ffcf80" opacity="0.6"/>
+          <path d="M 38 108 L 50 90 L 52 94 L 42 112 Z" fill="#ffa64d" opacity="0.5"/>
+          <path d="M 32 108 L 36 200 L 34 200 L 30 108 Z" fill="#ffa64d" opacity="0.35"/>
+
+          <!-- Far neon (frame-right, low) — subtle pink rim on opposite shoulder + hip -->
+          <path d="M 100 108 L 104 200 L 106 200 L 102 108 Z" fill="#d94c7a" opacity="0.22"/>
+          <path d="M 96 108 L 92 122 L 94 122 L 98 108 Z" fill="#d94c7a" opacity="0.28"/>
+
+          <!-- Micro-motion detail: subtle breath in chest area is on parent .detective. -->
+          <!-- Detail loop: dropped cigarette ember glow at pocket hand -->
+          <circle cx="45" cy="212" r="1.3" fill="#ffb84d" opacity="0.9">
+            <animate attributeName="opacity" values="0.9;0.35;0.9" dur="2.4s" repeatCount="indefinite"/>
+            <animate attributeName="r" values="1.3;1.1;1.3" dur="2.4s" repeatCount="indefinite"/>
+          </circle>
+        </svg>
+      </div>
+
+      <!-- Foreground rain -->
+      <canvas id="rain" class="rain-canvas"></canvas>
+    </div>
+  </div>
+
+  <div class="vignette"></div>
+  <div class="grain"></div>
+</div>
+
+<div class="bar top"></div>
+<div class="bar bot"></div>
+
+<div class="title-card">
+  <div class="kanji">現在</div>
+  <div class="rom">P R E S E N T</div>
+</div>
+
+<div class="credits">
+  <div class="a">directed by KATE STEELE</div>
+  <div class="b">a gravitas piece</div>
+</div>
+
+<button class="audio-toggle" id="audioToggle" type="button">sound</button>
+
+<script>
+  // ============ CANVAS RAIN ============
+  const rainCanvas = document.getElementById('rain');
+  const rctx = rainCanvas.getContext('2d');
+  let rw = 0, rh = 0;
+  function resizeRain() {
+    rw = rainCanvas.width = window.innerWidth;
+    rh = rainCanvas.height = window.innerHeight;
+  }
+  resizeRain();
+  window.addEventListener('resize', resizeRain);
+
+  // Rain drops with depth: closer drops = longer, faster, brighter
+  const drops = [];
+  const DROP_COUNT = 160;
+  for (let i = 0; i < DROP_COUNT; i++) {
+    const depth = Math.random(); // 0 far, 1 near
+    drops.push({
+      x: Math.random() * rw,
+      y: Math.random() * rh,
+      depth,
+      len: 6 + depth * 26,
+      speed: 4 + depth * 14,
+      thick: 0.4 + depth * 1.3,
+      alpha: 0.15 + depth * 0.55,
+    });
+  }
+  // Ground splashes — short-lived ripples
+  const splashes = [];
+
+  // Lamp position in screen space (roughly matches CSS .lamp at top 22% left 8%)
+  function lampPos() { return { x: rw * 0.10, y: rh * 0.28 }; }
+
+  function drawRain() {
+    rctx.clearRect(0, 0, rw, rh);
+    const lp = lampPos();
+    const beamR = rh * 0.55;
+
+    for (const d of drops) {
+      // Drops within the sodium beam get warmer, brighter
+      const dx = d.x - lp.x, dy = d.y - lp.y;
+      const dist = Math.hypot(dx, dy);
+      const inBeam = dist < beamR && d.y > lp.y - 40;
+      const t = inBeam ? Math.max(0, 1 - dist / beamR) : 0;
+
+      const r = Math.round(200 + 55 * t);
+      const g = Math.round(210 + 20 * t - 10 * (1 - t));
+      const b = Math.round(230 - 100 * t);
+      rctx.strokeStyle = `rgba(${r},${g},${b},${d.alpha * (0.75 + t * 0.5)})`;
+      rctx.lineWidth = d.thick;
+      rctx.beginPath();
+      // Rain angle: 22 degrees off vertical (matches wind), tilted right-to-left
+      const ax = -d.len * 0.38;
+      const ay = d.len;
+      rctx.moveTo(d.x, d.y);
+      rctx.lineTo(d.x + ax, d.y + ay);
+      rctx.stroke();
+
+      // Advance drop
+      d.x += -d.speed * 0.38;
+      d.y += d.speed;
+
+      // Ground splash chance when hitting bottom third
+      if (d.y > rh * 0.82 && Math.random() < 0.012 * d.depth) {
+        splashes.push({
+          x: d.x, y: d.y,
+          r: 0, maxR: 3 + d.depth * 6,
+          alpha: 0.35 * d.depth, warm: t,
+        });
+      }
+
+      if (d.y > rh || d.x < -20) {
+        d.x = Math.random() * rw + 40;
+        d.y = -20;
+      }
+    }
+
+    // Draw splashes
+    for (let i = splashes.length - 1; i >= 0; i--) {
+      const s = splashes[i];
+      const cr = Math.round(200 + 55 * s.warm);
+      const cg = Math.round(210 + 20 * s.warm - 10 * (1 - s.warm));
+      const cb = Math.round(230 - 100 * s.warm);
+      rctx.strokeStyle = `rgba(${cr},${cg},${cb},${s.alpha})`;
+      rctx.lineWidth = 0.8;
+      rctx.beginPath();
+      rctx.ellipse(s.x, s.y, s.r, s.r * 0.3, 0, 0, Math.PI * 2);
+      rctx.stroke();
+      s.r += 0.6;
+      s.alpha -= 0.02;
+      if (s.alpha <= 0 || s.r > s.maxR) splashes.splice(i, 1);
+    }
+
+    requestAnimationFrame(drawRain);
+  }
+  drawRain();
+
+  // ============ WEB AUDIO — restrained, warm, not painful ============
+  let audioCtx = null;
+  let started = false;
+  const toggle = document.getElementById('audioToggle');
+
+  function startAudio() {
+    if (started) return;
+    started = true;
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const master = audioCtx.createGain();
+    master.gain.value = 0;
+    master.connect(audioCtx.destination);
+    // Gentle fade-in over 4s to peak of 0.14 (was 0.35)
+    master.gain.linearRampToValueAtTime(0.14, audioCtx.currentTime + 4);
+
+    // --- Drone: 55Hz root + 82.5Hz perfect fifth. No detuned beating. ---
+    const droneGain = audioCtx.createGain();
+    droneGain.gain.value = 0.5;
+    const droneFilter = audioCtx.createBiquadFilter();
+    droneFilter.type = 'lowpass';
+    droneFilter.frequency.value = 300;
+    droneFilter.Q.value = 0.7;
+
+    const osc1 = audioCtx.createOscillator();
+    osc1.type = 'sine'; osc1.frequency.value = 55;
+    const osc2 = audioCtx.createOscillator();
+    osc2.type = 'sine'; osc2.frequency.value = 82.5;
+    const osc2g = audioCtx.createGain();
+    osc2g.gain.value = 0.55; // fifth is quieter than root
+
+    osc1.connect(droneGain);
+    osc2.connect(osc2g).connect(droneGain);
+    droneGain.connect(droneFilter).connect(master);
+    osc1.start(); osc2.start();
+
+    // Very slow, gentle filter movement
+    function sweepFilter() {
+      const now = audioCtx.currentTime;
+      droneFilter.frequency.cancelScheduledValues(now);
+      droneFilter.frequency.setValueAtTime(droneFilter.frequency.value, now);
+      droneFilter.frequency.linearRampToValueAtTime(180 + Math.random() * 220, now + 12);
+      setTimeout(sweepFilter, 12000);
+    }
+    sweepFilter();
+
+    // --- Rain hiss: softened. Lowpass at 900Hz instead of harsh bandpass at 3200 ---
+    const noiseBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 2, audioCtx.sampleRate);
+    const nb = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < nb.length; i++) nb[i] = Math.random() * 2 - 1;
+    const noise = audioCtx.createBufferSource();
+    noise.buffer = noiseBuffer; noise.loop = true;
+    const noiseFilter = audioCtx.createBiquadFilter();
+    noiseFilter.type = 'lowpass';
+    noiseFilter.frequency.value = 900;
+    noiseFilter.Q.value = 0.5;
+    const noiseGain = audioCtx.createGain();
+    noiseGain.gain.value = 0.035; // much quieter
+    noise.connect(noiseFilter).connect(noiseGain).connect(master);
+    noise.start();
+
+    // --- Shot one-shot: gentle sub swell on the pull-back reveal only. Whip pan is cut. ---
+    function scheduleOneShots() {
+      const loop = 30;
+      const t0 = audioCtx.currentTime;
+
+      // Pull back sub swell: warmer 60→40Hz glide, gentle
+      const subT = t0 + 23.3;
+      const sub = audioCtx.createOscillator();
+      sub.type = 'sine';
+      sub.frequency.setValueAtTime(60, subT);
+      sub.frequency.exponentialRampToValueAtTime(40, subT + 5);
+      const subGain = audioCtx.createGain();
+      subGain.gain.setValueAtTime(0, subT);
+      subGain.gain.linearRampToValueAtTime(0.18, subT + 2);
+      subGain.gain.linearRampToValueAtTime(0, subT + 5);
+      sub.connect(subGain).connect(master);
+      sub.start(subT);
+      sub.stop(subT + 5);
+
+      setTimeout(scheduleOneShots, loop * 1000);
+    }
+    scheduleOneShots();
+  }
+
+  toggle.addEventListener('click', () => {
+    if (!started) {
+      startAudio();
+      toggle.classList.add('on');
+      toggle.textContent = 'sound · on';
+    } else if (audioCtx.state === 'running') {
+      audioCtx.suspend();
+      toggle.classList.remove('on');
+      toggle.textContent = 'sound';
+    } else {
+      audioCtx.resume();
+      toggle.classList.add('on');
+      toggle.textContent = 'sound · on';
+    }
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Winter I Refused | A Snow Queen Reel</title>
+<link rel="icon" href="data:,">
+<script>
+(() => {
+  const param = new URLSearchParams(window.location.search).get("scoutTheme");
+  const theme = param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  document.documentElement.setAttribute("data-theme", theme);
+})();
+</script>
+<style>
+:root {
+  color-scheme: light;
+  --cp-bg: #f7f4ef;
+  --cp-bg-elevated: #fcfbf8;
+  --cp-surface: #ffffff;
+  --cp-surface-soft: #f5f5f5;
+  --cp-border: #dedede;
+  --cp-border-strong: #919191;
+  --cp-text: #242424;
+  --cp-text-muted: #5c5c5c;
+  --cp-text-soft: #6f6f6f;
+  --cp-accent: #b11f4b;
+  --cp-accent-hover: #9a1a41;
+  --cp-accent-soft: rgba(177, 31, 75, 0.08);
+  --cp-accent-fg: #ffffff;
+  --cp-success: #16a34a;
+  --cp-danger: #dc2626;
+  --cp-warning: #f59e0b;
+  --cp-link: #0078d4;
+  --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+  --cp-overlay: rgba(255, 255, 255, 0.8);
+  --cp-panel: rgba(255, 255, 255, 0.86);
+  --cp-panel-strong: rgba(255, 255, 255, 0.96);
+  --cp-sheen: rgba(255, 255, 255, 0.55);
+  --cp-highlight: rgba(177, 31, 75, 0.12);
+}
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --cp-bg: #3d3b3a;
+  --cp-bg-elevated: #343231;
+  --cp-surface: #292929;
+  --cp-surface-soft: #2e2e2e;
+  --cp-border: #474747;
+  --cp-border-strong: #5f5f5f;
+  --cp-text: #dedede;
+  --cp-text-muted: #919191;
+  --cp-text-soft: #b0b0b0;
+  --cp-accent: #fd8ea1;
+  --cp-accent-hover: #fb7b91;
+  --cp-accent-soft: rgba(253, 142, 161, 0.14);
+  --cp-accent-fg: #1a1a1a;
+  --cp-success: #4ade80;
+  --cp-danger: #f87171;
+  --cp-warning: #fbbf24;
+  --cp-link: #4da6ff;
+  --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+  --cp-overlay: rgba(41, 41, 41, 0.88);
+  --cp-panel: rgba(41, 41, 41, 0.72);
+  --cp-panel-strong: rgba(41, 41, 41, 0.96);
+  --cp-sheen: rgba(255, 255, 255, 0.04);
+  --cp-highlight: rgba(253, 142, 161, 0.12);
+}
+:root {
+  --cp-night: color-mix(in srgb, var(--cp-text) 88%, var(--cp-link));
+  --cp-ice: color-mix(in srgb, var(--cp-surface) 82%, var(--cp-link));
+  --cp-mist: color-mix(in srgb, var(--cp-border-strong) 65%, var(--cp-link));
+  --cp-deep: color-mix(in srgb, var(--cp-text) 95%, var(--cp-link));
+  --cp-snow: var(--cp-surface);
+  --cp-ember: var(--cp-warning);
+}
+html[data-theme="dark"] {
+  --cp-night: color-mix(in srgb, var(--cp-surface) 88%, var(--cp-link));
+  --cp-deep: color-mix(in srgb, var(--cp-surface) 95%, var(--cp-link));
+  --cp-ice: color-mix(in srgb, var(--cp-text) 82%, var(--cp-link));
+  --cp-snow: var(--cp-text);
+}
+* { box-sizing: border-box; }
+body { margin: 0; overflow: hidden; background: var(--cp-deep); color: var(--cp-snow); font-family: "Segoe UI", Aptos, Calibri, sans-serif; }
+button { font: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--cp-accent); outline-offset: 5px; }
+.screen { position: fixed; inset: 0; display: grid; place-items: center; }
+.film { position: relative; width: min(100vw,177.7778vh); aspect-ratio: 16/9; overflow: hidden; background: var(--cp-night); }
+#scene, #snow { position: absolute; width: 100%; height: 100%; inset: 0; }
+#snow { pointer-events: none; }
+.rig { will-change: transform, filter; transform-origin: 0 0; }
+.vignette { position: absolute; inset: 0; box-shadow: inset 0 0 120px color-mix(in srgb,var(--cp-deep) 48%,transparent); pointer-events: none; }
+.bar { position: absolute; left: 0; right: 0; height: 8%; background: var(--cp-deep); pointer-events: none; }
+.bar.top { top: 0; } .bar.bottom { bottom: 0; }
+.opening { position: absolute; left: 9%; top: 30%; width: 43%; transition: opacity 1s; }
+.eyebrow { font-size: clamp(9px, .85vw, 13px); letter-spacing: .35em; text-transform: uppercase; color: var(--cp-ice); }
+h1 { font: normal clamp(32px,5.5vw,88px)/.98 Georgia,serif; letter-spacing: -.045em; margin: 24px 0; }
+h1 em { font-weight: normal; color: var(--cp-snow); }
+.opening p { max-width: 330px; font: italic clamp(12px,1.15vw,18px)/1.6 Georgia,serif; color: var(--cp-ice); }
+.opening button { margin-top: 24px; padding: 12px 20px; background: var(--cp-panel-strong); color: var(--cp-text); border: 1px solid var(--cp-border); border-radius: 10px; font-size: 12px; letter-spacing: .15em; }
+.playing .opening { opacity: 0; pointer-events: none; visibility: hidden; transition: opacity 1s,visibility 0s 1s; }
+.controls { position: absolute; bottom: 1.7%; left: 4%; right: 4%; display: flex; align-items: center; gap: 20px; height: 4%; }
+.controls button { border: 0; padding: 5px 0; background: transparent; color: var(--cp-ice); font-size: 11px; letter-spacing: .12em; min-width: 48px; }
+.controls input { flex: 1; min-width: 30px; accent-color: var(--cp-accent); height: 2px; }
+.time { font-size: 10px; color: var(--cp-ice); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.credits { position: absolute; left: 8%; bottom: 15%; opacity: 0; pointer-events: none; }
+.credits p { font: italic clamp(18px,2.5vw,36px) Georgia,serif; margin: 0 0 16px; }
+.credits small { font-size: clamp(8px,.7vw,11px); letter-spacing: .19em; text-transform: uppercase; color: var(--cp-ice); }
+#notice { position: absolute; top: 9%; left: 4%; font-size: 12px; background: var(--cp-panel); color: var(--cp-text); }
+.breathing { transform-origin: 1035px 744px; animation: breath 4.7s ease-in-out infinite; }
+.hair { transform-origin: 1049px 382px; animation: hair 6.1s ease-in-out infinite; }
+.flame { transform-origin: 948px 466px; animation: flame 1.9s ease-in-out infinite; }
+.exhale { transform-origin: 1008px 406px; animation: exhale 4.7s ease-out infinite; }
+.paused .breathing,.paused .hair,.paused .flame,.paused .exhale { animation-play-state: paused; }
+@keyframes breath { 50% { transform: translateY(-1.3px) scaleY(1.002); } }
+@keyframes hair { 50% { transform: skewX(-1deg); } }
+@keyframes flame { 35% { transform: scale(.91,1.10) rotate(3deg); } 70% { transform: scale(1.05,.92) rotate(-2deg); } }
+@keyframes exhale { 0%,35%,100% { opacity: 0; transform: translate(0,0) scale(1); } 50% { opacity: .20; } 80% { opacity: 0; transform: translate(-25px,-6px) scale(1.6); } }
+@media(max-width:600px) { .controls { gap: 10px; bottom: 1%; } .controls button { font-size: 9px; } .opening { top: 19%; } h1 { margin: 12px 0; } .opening p { margin: 8px 0; } .opening button { margin-top: 8px; padding: 8px; font-size: 10px; } }
+@media(prefers-reduced-motion:reduce) { .breathing,.hair,.flame,.exhale { animation: none; } }
+</style>
+</head>
+<body class="paused">
+<main class="screen">
+<div class="film" id="film">
+<svg id="scene" viewBox="0 0 1600 900" role="img" aria-labelledby="sceneTitle sceneDesc">
+<title id="sceneTitle">The Winter I Refused</title>
+<desc id="sceneDesc">An original illustrated Snow Queen stands in a cathedral of ice, holding a forbidden flame. Her broken scepter lies across the thawing floor.</desc>
+<defs>
+  <linearGradient id="air" x2="0" y2="1"><stop stop-color="var(--cp-deep)"/><stop offset=".58" stop-color="var(--cp-mist)"/><stop offset="1" stop-color="var(--cp-night)"/></linearGradient>
+  <linearGradient id="pillar"><stop stop-color="var(--cp-deep)"/><stop offset=".48" stop-color="var(--cp-night)"/><stop offset=".8" stop-color="var(--cp-mist)"/><stop offset="1" stop-color="var(--cp-ice)" stop-opacity=".6"/></linearGradient>
+  <linearGradient id="window" x2=".4" y2="1"><stop stop-color="var(--cp-snow)" stop-opacity=".75"/><stop offset="1" stop-color="var(--cp-ice)" stop-opacity=".04"/></linearGradient>
+  <linearGradient id="floor" x2=".1" y2="1"><stop stop-color="var(--cp-mist)"/><stop offset=".65" stop-color="var(--cp-night)"/><stop offset="1" stop-color="var(--cp-deep)"/></linearGradient>
+  <linearGradient id="gown"><stop stop-color="var(--cp-night)"/><stop offset=".35" stop-color="var(--cp-mist)"/><stop offset=".61" stop-color="var(--cp-ice)"/><stop offset=".76" stop-color="var(--cp-mist)"/><stop offset="1" stop-color="var(--cp-night)"/></linearGradient>
+  <linearGradient id="cape"><stop stop-color="var(--cp-mist)" stop-opacity=".25"/><stop offset=".65" stop-color="var(--cp-ice)" stop-opacity=".65"/><stop offset="1" stop-color="var(--cp-snow)" stop-opacity=".22"/></linearGradient>
+  <linearGradient id="skin"><stop stop-color="var(--cp-ember)"/><stop offset=".3" stop-color="var(--cp-ice)"/><stop offset=".7" stop-color="var(--cp-ice)"/><stop offset="1" stop-color="var(--cp-mist)"/></linearGradient>
+  <radialGradient id="moon"><stop stop-color="var(--cp-snow)" stop-opacity=".28"/><stop offset="1" stop-color="var(--cp-ice)" stop-opacity="0"/></radialGradient>
+  <radialGradient id="warm"><stop stop-color="var(--cp-ember)" stop-opacity=".45"/><stop offset=".25" stop-color="var(--cp-ember)" stop-opacity=".13"/><stop offset="1" stop-color="var(--cp-ember)" stop-opacity="0"/></radialGradient>
+  <linearGradient id="crack"><stop stop-color="var(--cp-ember)" stop-opacity=".1"/><stop offset=".55" stop-color="var(--cp-ember)" stop-opacity=".9"/><stop offset="1" stop-color="var(--cp-ice)" stop-opacity=".3"/></linearGradient>
+  <filter id="grain"><feTurbulence baseFrequency=".65" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
+  <g id="arch">
+    <path d="M0 710 V290 Q0 80 175 -55 Q350 80 350 290 V710" fill="none" stroke="var(--cp-ice)" stroke-opacity=".18" stroke-width="30"/>
+    <path d="M12 710 V290 Q12 90 175 -40 Q338 90 338 290 V710" fill="none" stroke="var(--cp-snow)" stroke-opacity=".23" stroke-width="2"/>
+    <path d="M175 -40 V690 M8 352 H342 M31 208 H319" fill="none" stroke="var(--cp-ice)" stroke-opacity=".09" stroke-width="2"/>
+  </g>
+  <g id="shard"><path d="M0 0 L29 -24 L19 13 L-13 17Z" fill="var(--cp-ice)" fill-opacity=".5" stroke="var(--cp-ice)" stroke-width=".8"/><path d="M0 0 L19 13 M0 0 L29 -24" fill="none" stroke="var(--cp-snow)" stroke-opacity=".65"/></g>
+</defs>
+<rect width="1600" height="900" fill="url(#air)"/>
+<g class="rig" id="rig">
+  <rect x="-1200" y="-1000" width="4000" height="2500" fill="url(#air)"/>
+  <g opacity=".48">
+    <use href="#arch" transform="translate(60 130) scale(.64 .77)"/>
+    <use href="#arch" transform="translate(354 130) scale(.64 .77)"/>
+    <use href="#arch" transform="translate(654 130) scale(.64 .77)"/>
+    <use href="#arch" transform="translate(1250 130) scale(.64 .77)"/>
+  </g>
+  <!-- Moon through the eastern lancet is the cool key; the palm flame is the warm practical. -->
+  <path d="M938 652 V183 Q938 74 1095 -84 Q1252 74 1252 183 V652Z" fill="url(#window)"/>
+  <ellipse cx="1080" cy="250" rx="360" ry="390" fill="url(#moon)"/>
+  <path d="M1095 -70 V650 M966 122 H1226 M941 298 H1250 M940 475 H1250" fill="none" stroke="var(--cp-deep)" stroke-opacity=".65" stroke-width="9"/>
+  <path d="M1032 -6 L1095 129 L1163 -6 M942 303 L1095 129 L1250 303 M940 475 L1095 298 L1250 475" fill="none" stroke="var(--cp-ice)" stroke-opacity=".2" stroke-width="3"/>
+  <path d="M955 72 L927 676 L753 739 L1265 750 L1223 58" fill="url(#window)" opacity=".12"/>
+  <g fill="url(#pillar)">
+    <path d="M-50 -160 H144 L174 658 L212 722 H-55Z"/>
+    <path d="M438 -140 H508 L488 635 L535 703 H403 L455 633Z"/>
+    <path d="M823 -100 H895 L871 640 L909 710 H783 L839 638Z"/>
+    <path d="M1331 -130 H1437 L1400 655 L1455 734 H1281 L1348 651Z"/>
+  </g>
+  <g fill="none" stroke="var(--cp-ice)" stroke-opacity=".31">
+    <path d="M141 683 L113 89 Q301 -164 465 66 L456 658 M500 66 Q678 -150 854 66 L840 658 M889 64 Q1124 -187 1362 64 L1350 686" stroke-width="5"/>
+    <path d="M129 680 L104 90 Q294 -180 475 64 M491 69 Q675 -169 864 66 M880 68 Q1124 -208 1373 65" stroke-width="1"/>
+  </g>
+  <!-- An empty throne is subordinate to the woman who has walked away from it. -->
+  <g opacity=".62" transform="translate(512 382)">
+    <path d="M0 233 L27 25 L52 77 L83 -67 L108 61 L137 2 L148 231Z" fill="url(#pillar)" stroke="var(--cp-ice)" stroke-opacity=".4"/>
+    <path d="M27 25 L48 224 L83 -67 L85 228 L137 2 L117 229" fill="none" stroke="var(--cp-ice)" stroke-opacity=".35"/>
+    <path d="M13 160 L40 181 H119 L143 158 L147 236 H6Z" fill="var(--cp-night)" stroke="var(--cp-mist)" stroke-width="3"/>
+    <path d="M-31 247 H178 L200 261 H-48Z M-64 270 H212 L240 289 H-88Z" fill="var(--cp-mist)" fill-opacity=".5"/>
+  </g>
+  <path d="M-1000 715 Q800 613 2600 725 V1600 H-1000Z" fill="url(#floor)"/>
+  <g fill="none" stroke="var(--cp-ice)" stroke-opacity=".1">
+    <path d="M840 663 L-40 940 M967 660 L753 970 M1175 668 L1555 965 M346 731 L1479 732 M30 802 L1690 802 M-190 883 L1800 883"/>
+    <path d="M1070 688 L1020 802 L1195 845 L952 971 M321 710 L469 749 L415 781 L597 841"/>
+  </g>
+  <ellipse cx="1035" cy="754" rx="155" ry="20" fill="var(--cp-deep)" opacity=".55"/>
+  <path d="M1010 760 L952 872 L1117 872 L1078 760Z" fill="url(#window)" opacity=".15"/>
+  <g id="thaw" opacity="0">
+    <ellipse cx="911" cy="821" rx="340" ry="80" fill="url(#warm)"/>
+    <path d="M980 726 L947 772 L881 789 L925 813 L752 866 L811 889 L536 974" fill="none" stroke="url(#crack)" stroke-width="18" opacity=".12"/>
+    <path d="M980 726 L947 772 L881 789 L925 813 L752 866 L811 889 L536 974 M891 791 L787 802 L714 779 M757 866 L698 842 L627 853 M921 813 L1021 858 L1184 867" fill="none" stroke="url(#crack)" stroke-width="2"/>
+  </g>
+  <g class="breathing">
+    <!-- Weight is on her right foot; the released left hip opposes the high left shoulder. -->
+    <g class="hair">
+      <path d="M1048 365 Q1099 404 1105 485 Q1119 562 1208 615 Q1130 620 1099 550 Q1054 485 1048 365Z" fill="var(--cp-ice)" opacity=".65"/>
+      <path d="M1070 420 Q1100 533 1184 592" fill="none" stroke="var(--cp-snow)" stroke-opacity=".4"/>
+    </g>
+    <path d="M1027 431 Q1085 418 1102 462 L1138 629 Q1172 709 1269 752 Q1210 779 1107 739 L1074 621Z" fill="url(#cape)" stroke="var(--cp-ice)" stroke-opacity=".6"/>
+    <path d="M1082 446 L1173 721 L1256 751 L1120 692Z" fill="var(--cp-ice)" opacity=".12"/>
+    <path d="M1082 446 L1119 692 L1198 752 M1102 463 L1154 724" fill="none" stroke="var(--cp-ice)" stroke-opacity=".35"/>
+    <path d="M1015 442 L1057 433 L1083 469 Q1070 518 1077 555 Q1085 643 1137 754 Q1083 773 987 752 L1005 658 L1018 558 Q997 508 1004 472Z" fill="url(#gown)"/>
+    <path d="M1056 527 L1077 558 L1137 754 L1076 749Z" fill="var(--cp-night)" opacity=".47"/>
+    <path d="M1033 556 L1020 744 L987 752 L1014 572Z" fill="var(--cp-snow)" opacity=".27"/>
+    <path d="M1049 585 L1061 751 M1026 610 L1005 734 M1083 659 L1112 743" stroke="var(--cp-ice)" stroke-opacity=".45" fill="none"/>
+    <path d="M1028 753 L1027 763 L1043 765 L1053 757 M1082 755 L1085 763 L1113 764 L1104 755" fill="var(--cp-deep)"/>
+    <path d="M1076 463 Q1100 491 1093 535 L1076 584 L1066 580 L1075 530 L1059 479Z" fill="url(#gown)"/>
+    <path d="M1076 577 L1080 586 L1072 605 L1069 590 L1062 599 L1064 580Z" fill="url(#skin)"/>
+    <!-- Her open hand, not a weapon, is the central gesture. -->
+    <path d="M1018 451 Q1007 475 993 493 L961 479 L957 486 Q980 514 1000 509 Q1027 494 1035 470Z" fill="url(#gown)" stroke="var(--cp-ice)" stroke-opacity=".5"/>
+    <path d="M962 480 L948 473 Q938 469 932 463 L930 466 L942 477 L926 471 L924 474 L941 483 L955 487Z" fill="url(#skin)"/>
+    <path d="M1028 415 L1024 438 L1012 452 Q1040 475 1059 447 L1047 435 L1046 407Z" fill="url(#skin)"/>
+    <path d="M1011 445 L1036 464 L1059 439 L1068 459 L1045 491 L1006 468Z" fill="var(--cp-night)"/>
+    <path d="M1010 446 L1036 464 L1059 439 M1011 455 L1039 478 L1064 449" fill="none" stroke="var(--cp-ice)" stroke-width="2" opacity=".9"/>
+    <g transform="rotate(-9 1037 399)">
+      <path d="M1015 370 Q1046 352 1060 380 L1055 412 L1040 429 L1024 422 L1018 411 L1008 405 L1013 399Z" fill="url(#skin)"/>
+      <path d="M1043 378 Q1056 389 1054 409 L1040 429 L1047 407Z" fill="var(--cp-mist)" opacity=".55"/>
+      <path d="M1014 395 L1025 392 L1032 395" fill="none" stroke="var(--cp-night)" stroke-width="1.5"/>
+      <path d="M1014 399 L1024 399 L1028 398" fill="none" stroke="var(--cp-night)" stroke-width="1.3"/>
+      <path d="M1019 399 L1022 399" stroke="var(--cp-snow)" stroke-width="1.2"/>
+      <path d="M1015 402 L1011 407 L1018 409 M1017 414 L1027 415" fill="none" stroke="var(--cp-night)" stroke-width=".8"/>
+      <path d="M1009 384 Q1000 358 1029 353 Q1060 348 1065 377 L1060 416 L1051 422 L1050 377 Q1027 388 1018 369Z" fill="var(--cp-ice)"/>
+      <path d="M1010 375 Q1029 355 1054 369 M1027 360 Q1059 348 1060 394" fill="none" stroke="var(--cp-snow)" stroke-opacity=".7" stroke-width="1.5"/>
+      <path d="M1010 363 L997 325 L1021 347 L1020 302 L1037 343 L1057 313 L1054 350 L1078 334 L1060 370 Q1034 352 1010 363Z" fill="url(#window)" stroke="var(--cp-ice)" stroke-width="1.2"/>
+      <path d="M1020 302 L1030 353 M1057 313 L1043 355 M997 325 L1020 357" fill="none" stroke="var(--cp-snow)" stroke-opacity=".6"/>
+      <path d="M1011 361 Q1035 351 1060 368" fill="none" stroke="var(--cp-snow)" stroke-width="2"/>
+    </g>
+    <path class="exhale" d="M1008 407 Q980 394 964 405 Q980 411 995 409" fill="var(--cp-ice)" opacity="0"/>
+    <g id="fire">
+      <ellipse cx="949" cy="454" rx="85" ry="92" fill="url(#warm)"/>
+      <g class="flame">
+        <path d="M948 470 C926 458 939 447 944 438 Q949 429 944 421 C967 439 947 444 958 451 Q967 463 948 470Z" fill="var(--cp-ember)"/>
+        <path d="M948 468 Q938 459 948 443 Q947 454 953 457 Q958 465 948 468Z" fill="var(--cp-snow)"/>
+      </g>
+    </g>
+    <g fill="none" stroke="var(--cp-snow)" stroke-opacity=".65">
+      <path d="M1058 434 L1082 454 L1092 481 M1082 555 L1099 647 M1015 571 L997 701"/>
+    </g>
+    <path d="M942 478 L962 486 L993 502 M1010 410 L1021 422" fill="none" stroke="var(--cp-ember)" stroke-opacity=".65" stroke-width="1.2"/>
+  </g>
+  <!-- The snapped scepter only enters the frame during the final pullback. -->
+  <g transform="translate(598 819) rotate(-16)">
+    <path d="M-89 0 H43 L36 4 L46 8 H-89Z M69 1 H155 V8 H65 L76 5Z" fill="var(--cp-mist)" stroke="var(--cp-ice)" stroke-width="1.1"/>
+    <path d="M-89 -15 L-109 -29 L-100 -4 L-122 6 L-94 14 L-83 34 L-76 12 L-61 5 L-79 -3Z" fill="url(#window)" stroke="var(--cp-ice)"/>
+    <path d="M-101 -17 L-83 5 L-85 23 M-110 6 L-67 5" stroke="var(--cp-snow)" stroke-opacity=".6"/>
+  </g>
+  <use href="#shard" transform="translate(687 823) scale(.65)"/>
+  <use href="#shard" transform="translate(562 854) scale(.4) rotate(53)"/>
+  <use href="#shard" transform="translate(731 787) scale(.34) rotate(120)"/>
+  <g id="foreground" fill="url(#pillar)">
+    <path d="M-170 -250 H-36 L36 681 L-45 945 H-260Z"/>
+    <path d="M1606 -250 H1810 V1040 H1501 L1580 760Z"/>
+  </g>
+</g>
+<rect width="1600" height="900" filter="url(#grain)" opacity=".037" pointer-events="none"/>
+</svg>
+<canvas id="snow" aria-hidden="true"></canvas>
+<div class="vignette"></div>
+<div class="bar top"></div><div class="bar bottom"></div>
+<section class="opening" id="opening">
+  <div class="eyebrow">A fable after the fracture</div>
+  <h1>The winter<br><em>I refused.</em></h1>
+  <p>She was told nothing living could remain.<br>She kept the flame.</p>
+  <button id="begin" type="button">ENTER THE SILENCE &nbsp; &#9654;</button>
+</section>
+<div class="credits" id="credits"><p>The first thing to thaw was fear.</p><small>Directed by Kate Steele &nbsp; / &nbsp; DP: Gravitas</small></div>
+<div id="notice" role="status"></div>
+<nav class="controls" aria-label="Film playback">
+  <button id="play" type="button" aria-label="Play film">Play</button>
+  <button id="restart" type="button" aria-label="Restart film">Restart</button>
+  <input id="seek" aria-label="Film position in seconds" type="range" min="0" max="30" step=".01" value="0">
+  <span id="time" class="time">00:00 / 00:30</span>
+  <button id="sound" type="button" aria-pressed="false">Sound off</button>
+</nav>
+</div>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let position = 0, playing = false, started = false, previous = 0;
+const clamp = n => Math.min(1, Math.max(0,n));
+const ease = n => { n = clamp(n); return n*n*(3-2*n); };
+const mix = (a,b,n) => a+(b-a)*n;
+function render(t) {
+  let scale, x, y;
+  // 0-7s: the push separates the woman from her abandoned throne, revealing her offered palm.
+  if(t < 7) { const n=ease(t/7); scale=mix(1.16,1.29,n); x=mix(800,844,n); y=mix(350,365,n); }
+  // 7-10s: the crash is motivated by ignition; settle quickly, giving the gesture time to read.
+  else if(t < 10) { const n=1-Math.pow(1-clamp((t-7)/1.5),3); scale=mix(1.29,2.75,n); x=mix(844,959,n); y=mix(365,421,n); }
+  // 10-19s: a completely locked portrait. Breath, hair and fire carry the refusal.
+  else if(t < 19) { scale=2.75; x=959; y=421; }
+  // 19-30s: widening reveals the broken scepter and a warm fissure spreading beyond her feet.
+  else { const n=ease((t-19)/9); scale=mix(2.75,.96,n); x=mix(959,801,n); y=mix(421,490,n); }
+  if(reducedMotion) { scale=.96; x=801; y=490; }
+  const tx=800-x*scale, ty=450-y*scale;
+  $('rig').style.transform=`translate(${tx}px,${ty}px) scale(${scale})`;
+  $('rig').style.filter=t>=7&&t<19?'contrast(1.03) saturate(1.04) brightness(1.08)':'contrast(1) saturate(.88) brightness(1.05)';
+  $('foreground').setAttribute('transform',`translate(${(scale-1)*-16} 0)`);
+  $('fire').style.opacity=started ? mix(.14,1,ease((t-7)/1.2)) : .8;
+  $('thaw').style.opacity=ease((t-19)/6);
+  $('credits').style.opacity=started ? ease((t-26)/1.5) : 0;
+  $('seek').value=t;
+  $('time').textContent=`00:${String(Math.floor(t)).padStart(2,'0')} / 00:30`;
+}
+function setPlaying(value) {
+  playing=value;
+  if(value) { started=true; document.body.classList.add('playing'); $('opening').inert=true; }
+  document.body.classList.toggle('paused',!value);
+  $('play').textContent=value?'Pause':'Play';
+  $('play').setAttribute('aria-label',value?'Pause film':'Play film');
+  if(master && audio) master.gain.setTargetAtTime(value&&soundOn?.12:0,audio.currentTime,1);
+  render(position);
+}
+$('begin').addEventListener('click',()=>{ position=0; setPlaying(true); $('play').focus(); });
+$('play').addEventListener('click',()=>setPlaying(!playing));
+$('restart').addEventListener('click',()=>{position=0;setPlaying(true);});
+$('seek').addEventListener('input',e=>{position=Number(e.target.value);render(position);});
+document.addEventListener('keydown',e=>{
+  if(e.code==='Space' && (e.target===document.body || e.target===$('scene'))) {e.preventDefault();setPlaying(!playing);}
+});
+const canvas=$('snow'), ctx=canvas.getContext('2d');
+let w=0,h=0,dpr=1,iceColor,emberColor;
+const flakes=Array.from({length:150},()=>({x:Math.random(),y:Math.random(),z:Math.random(),phase:Math.random()*6.28}));
+function resize() {
+  const rect=$('film').getBoundingClientRect(); w=rect.width;h=rect.height;dpr=Math.min(devicePixelRatio||1,2);
+  canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);
+  const style=getComputedStyle(document.documentElement);
+  iceColor=style.getPropertyValue('--cp-snow').trim();emberColor=style.getPropertyValue('--cp-ember').trim();
+}
+resize();addEventListener('resize',resize);
+function drawSnow(dt) {
+  ctx.clearRect(0,0,w,h);
+  for(const f of flakes) {
+    if(playing&&!reducedMotion) {
+      f.y=(f.y+dt*(.009+f.z*.026))%1;
+      f.x=(f.x-dt*(.004+f.z*.012)+1)%1;
+    }
+    const x=f.x*w+Math.sin(position*.4+f.phase)*f.z*9,y=f.y*h;
+    ctx.globalAlpha=.12+f.z*.44;
+    ctx.fillStyle=Math.hypot(x/w-.61,y/h-.51)<.07?emberColor:iceColor;
+    ctx.beginPath();ctx.ellipse(x,y,.35+f.z*1.2,.45+f.z*1.8,-.3,0,Math.PI*2);ctx.fill();
+  }
+  ctx.globalAlpha=1;
+}
+let audio,master,soundOn=false;
+function createAudio() {
+  const AudioEngine=window.AudioContext||window.webkitAudioContext;
+  if(!AudioEngine) throw new Error('Web Audio is unavailable in this browser.');
+  audio=new AudioEngine();master=audio.createGain();master.gain.value=0;master.connect(audio.destination);
+  for(const [frequency,level] of [[55,.25],[82.5,.12],[110,.07]]) {
+    const oscillator=audio.createOscillator(), gain=audio.createGain();
+    oscillator.type='sine';oscillator.frequency.value=frequency;gain.gain.value=level;
+    oscillator.connect(gain);gain.connect(master);oscillator.start();
+  }
+  const buffer=audio.createBuffer(1,audio.sampleRate*6,audio.sampleRate);
+  const data=buffer.getChannelData(0);for(let i=0;i<data.length;i++)data[i]=Math.random()*2-1;
+  const noise=audio.createBufferSource(),lowpass=audio.createBiquadFilter(),gain=audio.createGain();
+  noise.buffer=buffer;noise.loop=true;lowpass.type='lowpass';lowpass.frequency.value=800;lowpass.Q.value=.5;gain.gain.value=.17;
+  noise.connect(lowpass);lowpass.connect(gain);gain.connect(master);noise.start();
+}
+$('sound').addEventListener('click',async()=>{
+  try {
+    if(!audio)createAudio();
+    await audio.resume();soundOn=!soundOn;
+    master.gain.cancelScheduledValues(audio.currentTime);
+    master.gain.setValueAtTime(master.gain.value,audio.currentTime);
+    master.gain.linearRampToValueAtTime(soundOn&&playing?.12:0,audio.currentTime+4);
+    $('sound').textContent=soundOn?'Sound on':'Sound off';$('sound').setAttribute('aria-pressed',String(soundOn));
+    $('notice').textContent='';
+  } catch(error) {
+    $('notice').textContent=`Sound could not start: ${error.message}`;
+  }
+});
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&playing)setPlaying(false);});
+function frame(now) {
+  const dt=previous?Math.min((now-previous)/1000,.1):0;previous=now;
+  if(playing){position=(position+dt)%30;render(position);}
+  drawSnow(dt);requestAnimationFrame(frame);
+}
+render(0);requestAnimationFrame(frame);
+</script>
+</body>
+</html>
